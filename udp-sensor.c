@@ -23,7 +23,6 @@
 static struct simple_udp_connection udp_conn;
 static struct lattice public_lattice;
 uip_ipaddr_t dest_ipaddr;
-//static struct point public_point;
 
 /*---------------------------------------------------------------------------*/
 PROCESS(udp_sensor_process, "UDP sensor process");
@@ -47,8 +46,6 @@ static void
 one_way_function(char secret[VECTOR_SIZE]){
     printf("One way function\n");
     int i, j, temp;
-    //int temp_vector[VECTOR_SIZE];
-    //memcpy(temp_vector, &public_lattice.vectors[0], VECTOR_SIZE*sizeof(*public_lattice.vectors));
     long output[NBR_VECTORS] = {0};
     for(i = 0; i < VECTOR_SIZE; i++){ // i is the i eme element in the public key we work on
         temp = public_lattice.vectors[i];
@@ -105,14 +102,6 @@ chouse_random_point(){
              output[i] += temp*random_vector[j];
              //printf("%d %d %d %li %li \n", (int) i, (int) j, (int) temp, (long) random_vector[j], (long) output[i]);
         }
-	//PRINTF("\n");
-        //output[i] = output[i]%public_lattice.metadata.max;
-        //temp_vector[VECTOR_SIZE-pointer-1] = (-temp_vector[VECTOR_SIZE-pointer-1])%public_lattice.metadata.max;
-
-        //for (k = 0; k<VECTOR_SIZE; k++){
-	//   printf("%d ", temp_vector[(VECTOR_SIZE-pointer-1+k)%VECTOR_SIZE]);
-    	//}
-        //PRINTF("\n");
     }
     printf("Le point de sortie :\n");
     for (i = 0; i<VECTOR_SIZE; i++){
@@ -145,7 +134,6 @@ tcpip_handler(struct simple_udp_connection *c,
     struct udp_lattice temp_lattice = *received_struct_ptr;
 
     public_lattice.metadata = temp_lattice.metadata;
-    //public_lattice.vectors = temp_lattice.vectors;
 
 
     if(temp_lattice.metadata.id != (typeof(temp_lattice.metadata.id)) -1){
@@ -175,24 +163,6 @@ tcpip_handler(struct simple_udp_connection *c,
 	one_way_function(test);
         chouse_random_point();
     }
-
-    /*
-    for (i = 0; i<public_lattice.dim_n; i++){
-        public_point.point[i] = 0;
-        public_point.vector[i] = rand()%public_lattice.max;
-        for (j = 0; j < public_lattice.dim_m; j++) {
-            public_point.point[j] = public_point.point[j] + public_lattice.vectors[i][j]*public_point.vector[i];
-        }
-    }
-    printf("Vecteur : ");
-    for (i = 0; i<public_lattice.dim_n; i++){
-        printf("%d ", public_point.vector[i]);
-    }
-    printf("Point : ");
-    for (i = 0; i<public_lattice.dim_n; i++){
-        printf("%d ", public_point.point[i]);
-    }
-    printf("\n");*/
   }
 }
 
@@ -201,7 +171,7 @@ tcpip_handler(struct simple_udp_connection *c,
 PROCESS_THREAD(udp_sensor_process, ev, data)
 {
   static struct etimer periodic;
-  //static struct ctimer backoff_timer;
+
 #if WITH_COMPOWER
   static int print = 0;
 #endif
@@ -228,25 +198,19 @@ PROCESS_THREAD(udp_sensor_process, ev, data)
   printf("Le nombre choisis est : %.6f\n", (double) value);*/
 
   etimer_set(&periodic, START_TIME);
-  //int request_id = 123;
-  //ctimer_set(&backoff_timer, SEND_TIME, send_request, &request_id);
+
   while(1) {
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic));
 
     NETSTACK_ROUTING.get_root_ipaddr(&dest_ipaddr);
 
-    if(ev == tcpip_event) {
-      //tcpip_handler();
-    }
-    
-    if(etimer_expired(&periodic)) {
-       etimer_set(&periodic, rand()%MAX_RECHECK_TIME);
-       if (public_lattice.metadata.max == (int) NULL) {
-           send_request(0);
-       } else if (public_lattice.metadata.id != (typeof(public_lattice.metadata.id)) -1) {
-	   send_request(public_lattice.metadata.id+1);
-      }
-      //ctimer_set(&backoff_timer, SEND_TIME, NULL, NULL);//send_packet, NULL);
+    etimer_set(&periodic, rand()%MAX_RECHECK_TIME);
+    if (public_lattice.metadata.max == (int) NULL) {
+        send_request(0);
+    } else if (public_lattice.metadata.id != (typeof(public_lattice.metadata.id)) -1) {
+	send_request(public_lattice.metadata.id+1);
+   }
+
 
 #if WITH_COMPOWER
       if (print == 0) {
@@ -256,7 +220,6 @@ PROCESS_THREAD(udp_sensor_process, ev, data)
 	print = 0;
       }
 #endif
-    }
   }
 
   PROCESS_END();
