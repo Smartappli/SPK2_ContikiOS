@@ -1,6 +1,6 @@
 all: udp-sensor udp-gateway
 APPS=servreg-hack
-CONTIKI=..
+CONTIKI=../contiki-ng
 
 LDFLAGS += -lm
 TARGET_LIBFILES = -lm

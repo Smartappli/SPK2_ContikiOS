@@ -1,6 +1,6 @@
-#define NBR_VECTORS 10
-#define VECTOR_SIZE 10
-#define DATA_PER_PACKET 42
+#define NBR_VECTORS 200
+#define VECTOR_SIZE 512
+#define DATA_PER_PACKET 38
 #define MODULO_LATTICE 64 //Max 2^16-1 = 65.535
 
 #define UDP_CLIENT_PORT	8765
@@ -14,19 +14,19 @@
 # include <stdlib.h>
 
 struct lattice_metadata {
-	    int8_t id;
-	    uint16_t dim_n;
-            uint16_t dim_m;
-            uint16_t max;
+	    char id;
+	    unsigned int dim_n;
+            unsigned int dim_m;
+            unsigned int max;
         };
 
 struct lattice {
-            uint16_t vectors[VECTOR_SIZE];
+            int vectors[VECTOR_SIZE];
 	    struct lattice_metadata metadata;
         };
 
 struct udp_lattice {
-            uint16_t vectors[DATA_PER_PACKET];
+            int vectors[DATA_PER_PACKET];
 	    struct lattice_metadata metadata;
         };
 
@@ -37,6 +37,6 @@ struct udp_lattice {
 //#define MAX_PAYLOAD_LEN		2
 
 struct point {
-            uint16_t vector[VECTOR_SIZE];
-            uint32_t point[VECTOR_SIZE];
+            int vector[VECTOR_SIZE];
+            long point[VECTOR_SIZE];
         };
