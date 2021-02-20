@@ -12,6 +12,7 @@
 #include <ctype.h>
 //#include "cfs/cfs.h"
 #include "parameters.h"
+#include "HNF.c"
 
 #define DEBUG DEBUG_PRINT
 #include "os/net/ipv6/uip-debug.h"
@@ -120,6 +121,24 @@ PROCESS_THREAD(udp_gateway_process, ev, data)
   PROCESS_BEGIN();
 
   //PROCESS_PAUSE();
+  int n = 3;
+  double lc = 1/2;
+  double hc = 3/4;
+  int i;
+  double* test;
+  test = (double*)malloc(n*n*sizeof(double));
+  printf("Vecteur de base\n");
+  for (i = 0; i < 9; i++)
+        test[i] = (double) i;
+        printf("%d ", (int) test[i]);
+  printf("\n");
+
+  lll_reduce(test, n, lc, hc);
+
+  printf("Forme Hermitienne\n");
+  for (i = 0; i < 9; i++)
+        printf("%d ", (int) test[i]);
+  printf("\n");
 
   //SENSORS_ACTIVATE(button_sensor);
 
