@@ -1,5 +1,5 @@
-#define NBR_VECTORS 200
-#define VECTOR_SIZE 512
+#define NBR_VECTORS 10
+#define VECTOR_SIZE 10
 #define DATA_PER_PACKET 38
 #define MODULO_LATTICE 64 //Max 2^16-1 = 65.535
 

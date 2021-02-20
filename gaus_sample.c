@@ -1,3 +1,4 @@
+# include "math_functions.c"
 # include <math.h>
 # include <stdint.h>
 # include <stdio.h>
@@ -5,9 +6,9 @@
 
 /******************************************************************************/
 
-uint32_t shr3_seeded ( uint32_t *jsr ){
+long shr3_seeded ( long *jsr ){
 
-  uint32_t value;
+  long value;
   value = *jsr;
 
   *jsr = ( *jsr ^ ( *jsr <<   13 ) );
@@ -21,7 +22,7 @@ uint32_t shr3_seeded ( uint32_t *jsr ){
 
 /******************************************************************************/
 
-void r4_nor_setup ( uint32_t kn[128], float fn[128], float wn[128] ){
+void r4_nor_setup ( long kn[128], float fn[128], float wn[128] ){
 
   double dn = 3.442619855899;
   int i;
@@ -32,7 +33,7 @@ void r4_nor_setup ( uint32_t kn[128], float fn[128], float wn[128] ){
 
   q = vn / exp ( - 0.5 * dn * dn );
 
-  kn[0] = ( uint32_t ) ( ( dn / q ) * m1 );
+  kn[0] = ( long ) ( ( dn / q ) * m1 );
   kn[1] = 0;
 
   wn[0] = ( float ) ( q / m1 );
@@ -44,7 +45,7 @@ void r4_nor_setup ( uint32_t kn[128], float fn[128], float wn[128] ){
   for ( i = 126; 1 <= i; i-- )
   {
     dn = sqrt ( - 2.0 * log ( vn / dn + exp ( - 0.5 * dn * dn ) ) );
-    kn[i+1] = ( uint32_t ) ( ( dn / tn ) * m1 );
+    kn[i+1] = ( long ) ( ( dn / tn ) * m1 );
     tn = dn;
     fn[i] = ( float ) ( exp ( - 0.5 * dn * dn ) );
     wn[i] = ( float ) ( dn / m1 );
@@ -55,8 +56,8 @@ void r4_nor_setup ( uint32_t kn[128], float fn[128], float wn[128] ){
 
 /******************************************************************************/
 
-float r4_uni ( uint32_t *jsr ){
-  uint32_t jsr_input;
+float r4_uni ( long *jsr ){
+  long jsr_input;
   float value;
 
   jsr_input = *jsr;
@@ -72,10 +73,10 @@ float r4_uni ( uint32_t *jsr ){
 
 /******************************************************************************/
 
-float r4_nor ( uint32_t *jsr, uint32_t kn[128], float fn[128], float wn[128] ){
+float r4_nor ( long *jsr, long kn[128], float fn[128], float wn[128] ){
 
   int hz;
-  uint32_t iz;
+  long iz;
   const float r = 3.442620;
   float value;
   float x;

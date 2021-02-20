@@ -24,6 +24,7 @@ static struct simple_udp_connection udp_conn;
 static struct lattice public_lattice;
 uip_ipaddr_t dest_ipaddr;
 
+
 /*---------------------------------------------------------------------------*/
 PROCESS(udp_sensor_process, "UDP sensor process");
 AUTOSTART_PROCESSES(&udp_sensor_process);
@@ -176,13 +177,13 @@ PROCESS_THREAD(udp_sensor_process, ev, data)
   static int print = 0;
 #endif
 
+float fn[128], wn[128];
+long kn[128];
+long jsr = 42;
+
   PROCESS_BEGIN();
 
   PROCESS_PAUSE();
-
-  /*float fn[128], wn[128];
-  long kn[128];
-  long jsr = 42;*/
 
   simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL, UDP_SERVER_PORT, tcpip_handler);
 
@@ -191,11 +192,14 @@ PROCESS_THREAD(udp_sensor_process, ev, data)
 #endif
 
 
-  /*printf("Building random generator");
+  printf("Building random generator\n");
   r4_nor_setup ( kn, fn, wn );
   shr3_seeded ( &jsr );
-  float value = r4_nor ( &jsr, kn, fn, wn );
-  printf("Le nombre choisis est : %.6f\n", (double) value);*/
+  int i;
+  for(i = 0; i<10; i++){
+     float value = r4_nor ( &jsr, kn, fn, wn );
+     printf("Le nombre choisis est : %d\n", (int) (1000000000*value));
+  }
 
   etimer_set(&periodic, START_TIME);
 
