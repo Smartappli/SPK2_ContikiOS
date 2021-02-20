@@ -161,10 +161,7 @@ tcpip_handler(struct simple_udp_connection *c,
   	
 	char test[VECTOR_SIZE] = {1};
 	one_way_function(test);
-        
-	chouse_random_point();
-
-		
+        chouse_random_point();
     }
   }
 }
