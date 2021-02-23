@@ -9,23 +9,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 //#include "cfs/cfs.h"
 #include "parameters.h"
 #include "HNF.c"
+#include <ctype.h>
 
-#define DEBUG DEBUG_PRINT
-#include "os/net/ipv6/uip-debug.h"
+//#define DEBUG DEBUG_PRINT
+//#include "os/net/ipv6/uip-debug.h"
 
 // a voir #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
-#define UIP_LLH_LEN 0
-static struct simple_udp_connection udp_conn;
-static struct lattice public_lattice;
 
+//#define UIP_LLH_LEN 0
 /*---------------------------------------------------------------------------*/
 PROCESS(udp_gateway_process, "UDP gateway process");
 AUTOSTART_PROCESSES(&udp_gateway_process);
 /*---------------------------------------------------------------------------*/
+
+static struct simple_udp_connection udp_conn;
+static struct lattice public_lattice;
+
 
 void create_lattice(){
 
@@ -41,7 +43,7 @@ void create_lattice(){
         //}
     }
 
-    PRINTF("Lattice created\n");
+    printf("Lattice created\n");
 
     for (i = 0; i < public_lattice.metadata.dim_n; i++){
         printf("%d ", public_lattice.vectors[i]);
@@ -76,33 +78,33 @@ tcpip_handler(struct simple_udp_connection *c,
     appdata = (char*)data;
     appdata[uip_datalen()] = 0;
     int request_id = strtol(appdata, &appdata, 10);
-    PRINTF("Request received : %d\n", request_id);
+    printf("Request received : %d\n", request_id);
 
     if(request_id == 0) {
 
-		PRINTF("Request for new Lattice received from ");
-	    	PRINTF("%d",
+		printf("Request for new Lattice received from ");
+	    	printf("%d",
 		   UIP_IP_BUF->srcipaddr.u8[sizeof(UIP_IP_BUF->srcipaddr.u8) - 1]);
-	    	PRINTF("\n");
+	    	printf("\n");
 
 		get_lattice();
 
-		PRINTF("Sending...\n");
+		printf("Sending...\n");
      }
 
      struct udp_lattice temp_lattice;
      temp_lattice.metadata = public_lattice.metadata;
      if(request_id >= VECTOR_SIZE/DATA_PER_PACKET){ 
 	     temp_lattice.metadata.id = -1;
-	     PRINTF("Sending last element '%d' to ", request_id);
-             PRINTF("%d", UIP_IP_BUF->srcipaddr.u8[sizeof(UIP_IP_BUF->srcipaddr.u8) - 1]);
-	     PRINTF("\n");
+	     printf("Sending last element '%d' to ", request_id);
+             printf("%d", UIP_IP_BUF->srcipaddr.u8[sizeof(UIP_IP_BUF->srcipaddr.u8) - 1]);
+	     printf("\n");
 	     memcpy(temp_lattice.vectors, &public_lattice.vectors[request_id*DATA_PER_PACKET], (VECTOR_SIZE-request_id*DATA_PER_PACKET)*sizeof(*public_lattice.vectors)); //The last elements are never instanciated but never read so its nothing I believe
      } else {
 	     temp_lattice.metadata.id = request_id;
-	     PRINTF("Sending element '%d' to ", request_id);
-             PRINTF("%d", UIP_IP_BUF->srcipaddr.u8[sizeof(UIP_IP_BUF->srcipaddr.u8) - 1]);
-	     PRINTF("\n");
+	     printf("Sending element '%d' to ", request_id);
+             printf("%d", UIP_IP_BUF->srcipaddr.u8[sizeof(UIP_IP_BUF->srcipaddr.u8) - 1]);
+	     printf("\n");
 	     memcpy(temp_lattice.vectors, &public_lattice.vectors[(request_id*DATA_PER_PACKET)%VECTOR_SIZE], DATA_PER_PACKET*sizeof(*public_lattice.vectors));
      }
      //uip_ipaddr_copy(&server_conn->ripaddr, &UIP_IP_BUF->srcipaddr);
@@ -121,28 +123,10 @@ PROCESS_THREAD(udp_gateway_process, ev, data)
   PROCESS_BEGIN();
 
   //PROCESS_PAUSE();
-  int n = 3;
-  double lc = 1/2;
-  double hc = 3/4;
-  int i;
-  double* test;
-  test = (double*)malloc(n*n*sizeof(double));
-  printf("Vecteur de base\n");
-  for (i = 0; i < 9; i++)
-        test[i] = (double) i;
-        printf("%d ", (int) test[i]);
-  printf("\n");
-
-  lll_reduce(test, n, lc, hc);
-
-  printf("Forme Hermitienne\n");
-  for (i = 0; i < 9; i++)
-        printf("%d ", (int) test[i]);
-  printf("\n");
 
   //SENSORS_ACTIVATE(button_sensor);
 
-  PRINTF("UDP gateway started\n");
+  printf("UDP gateway started\n");
 
   /* Initialize DAG root */
   NETSTACK_ROUTING.root_start();

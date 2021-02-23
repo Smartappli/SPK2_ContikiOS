@@ -1,3 +1,116 @@
+#include <stdio.h> 
+#include <math.h> 
+
+
+double dot_product(double *x, double *y) { 
+
+int i; 
+double ans = 0; 
+
+for(i=0; i<4; ++i) 
+    ans += x[i]*y[i]; 
+
+return ans; 
+} 
+
+
+
+void normalize(double *x) { 
+
+/* Compute norm */ 
+double norm = sqrt(dot_product(x, x)); 
+ 
+int i; 
+for(i=0; i<4; ++i) 
+    x[i] /= norm; 
+} 
+
+
+
+/* Find an orthonormal basis for the set of vectors q 
+* using the Gram-Schmidt Orthogonalization process */ 
+void gram_schimdt(double q[][3], int n) { 
+
+int i, j, k;
+
+for(i=1; i<n; ++i) { 
+    for(j=0; j<i; ++j) { 
+        double scaling_factor = dot_product(q[j], q[i])  
+                                / dot_product(q[j], q[j]); 
+         
+        /* Subtract each scaled component of q_j from q_i */ 
+        for(k=0; k<3; ++k) 
+            q[i][k] -= scaling_factor*q[j][k]; 
+    } 
+} 
+
+/* Now normalize all the 'n' orthogonal vectors */ 
+for(i=0; i<n; ++i) 
+    normalize(q[i]); 
+} 
+
+
+
+void HNF(double q[3][3], int n) {
+        double test[3][3];
+	double output[3][3];
+        int i, j;
+	for(i=0; i<n; ++i) { 
+	    for(j=0; j<n; ++j) { 
+		test[i][j] = q[i][j];
+		output[i][j] = 0;
+	    }
+	}
+        gram_schimdt(q, n);
+	/*for(i=0; i<n; ++i) { 
+	    for(j=0; j<n; ++j) { 
+		output[i][j] += dot_product(q[j], test[i]);
+		printf("%d  ", (int) (arr[i][j]*1000)); 
+	    }
+	}*/
+
+	    for(i=0; i<3; ++i) { 
+		printf("q[%d] = [ ", i); 
+		for(j=0; j<3; ++j) 
+		    printf("%d  ", (int) (q[i][j]*1000)); 
+		printf("]\n"); 
+	    }  
+
+	int k;
+
+	for(i=0;i<3;i++)    
+	{    
+	for(j=0;j<3;j++)    
+	{    
+	output[i][j]=0;    
+	for(k=0;k<3;k++)    
+	{    
+	output[i][j]+=q[i][k]*test[k][j];    
+	}    
+	}    
+	}    
+
+	for(i=0; i<n; ++i) { 
+	    for(j=0; j<n; ++j) { 
+		q[i][j] = output[i][j];
+	    }
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*===============================================================================================
 
 The LLL-Reduction Algorithm
@@ -7,7 +120,7 @@ Authors:
 
 *Grady Williams (gradyrw@gmail.com)
 
-================================================================================================*/
+================================================================================================
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -59,13 +172,13 @@ void gram_schmidt(double* b, double* mu, double* B, int n)
 
 
 
-/*
+*
 Performs Lenstra-Lenstra-Lovasv reduction on a given lattive n in 
 n-dimensional real space. The lc and  uc are the upper and lower constants 
 used in the LLL-Algorithm. The default is lc = 1/2 and uc = 3/4. We 
 presume that our algorithm has been given a matrix represented in an 
-array with standard C ordering. Reduction is performed on the columns of b.
-*/
+array with standard C ordering. Reduction is performed on the columns of b.*
+
 void lll_reduce(double* b, int n, double lc, double uc)
 {
   //Performs the Gramm-Schmidt Algorithm
@@ -150,5 +263,4 @@ void lll_reduce(double* b, int n, double lc, double uc)
       k = k + 1;
     }
   }	    
-}r
-
+}*/

@@ -14,6 +14,7 @@
 #include <string.h>
 #include "parameters.h"
 #include "gaus_sample.c"
+#include "HNF.c"
 
 
 #ifndef PERIOD
@@ -163,6 +164,29 @@ tcpip_handler(struct simple_udp_connection *c,
 	char test[VECTOR_SIZE] = {1};
 	one_way_function(test);
         chouse_random_point();
+          int j;
+	  double arr[3][3] = { 
+		    {2, 4, 4}, 
+		    {2, 7, 1}, 
+		    {7, 4, 9} 
+		}; 
+	  printf("Vecteur de base :\n");
+	    for(i=0; i<3; ++i) { 
+		printf("q[%d] = [ ", i); 
+		for(j=0; j<3; ++j) 
+		    printf("%d  ", (int) (arr[i][j])); 
+		printf("]\n"); 
+	    } 
+
+	  HNF(arr, 3);
+
+	  printf("Forme Hermitienne :\n");
+	    for(i=0; i<3; ++i) { 
+		printf("q[%d] = [ ", i); 
+		for(j=0; j<3; ++j) 
+		    printf("%d  ", (int) (arr[i][j]*1000)); 
+		printf("]\n"); 
+	    } 
     }
   }
 }
