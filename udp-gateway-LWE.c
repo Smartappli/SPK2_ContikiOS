@@ -27,48 +27,66 @@ AUTOSTART_PROCESSES(&udp_gateway_process);
 /*---------------------------------------------------------------------------*/
 
 void create_lattice(){
-
     public_lattice.metadata.dim_n = VECTOR_SIZE;
     public_lattice.metadata.dim_m = NBR_VECTORS;
     public_lattice.metadata.max = MODULO_LATTICE;
-
     int i;
+
     for (i = 0; i<public_lattice.metadata.dim_n; i++) {
         public_lattice.vectors[i] = rand()%public_lattice.metadata.max;
-        //for (j = 0; j < public_lattice.dim_m; j++) {
-            //public_lattice.vectors[i][j] = rand()%public_lattice.max;
-        //}
-    }
+    }//end if
+}//end create_lattice()
 
-    PRINTF("Lattice created\n");
-
-    for (i = 0; i < public_lattice.metadata.dim_n; i++){
-        printf("%d ", public_lattice.vectors[i]);
-	if((i+1)%30==0)
-	   printf("\n");
-        //for (j = 0; j < public_lattice.dim_m; j++) {
-        //    printf("%d ", public_lattice.vectors[i][j]);
-        //}
-    }
-    printf("\n");
-}
 /*---------------------------------------------------------------------------*/
 
 void get_lattice(){
     if(public_lattice.metadata.max==(int) NULL) {
 	create_lattice();
-    }
-}
+    }//end if
+}//end get_lattice()
+
 /*---------------------------------------------------------------------------*/
-static void
-tcpip_handler(struct simple_udp_connection *c,
+
+void create_polynome(long input[]){
+    long i;
+    for(i = 0; i < VECTOR_SIZE; i++) {
+	input[i]=rand()%MODULO_LATTICE;
+    }//end for
+}//end create_polynome()
+
+/*---------------------------------------------------------------------------*/
+
+void key_generation(const long public_key_1[], long private_key[], long public_key_2[]){
+    long r[VECTOR_SIZE];
+    unsigned long i;
+
+    create_polynome(r);
+    create_polynome(private_key);
+
+    for(i = 0; i < N; i++){
+	public_key_1[i] = (r[i] - public_key_1[i]*private_key[i])%MODULO_LATTICE
+    }//end for
+}//end key_generation()
+
+/*---------------------------------------------------------------------------*/
+
+void encode(long input[]){
+    long i;
+    for(i = 0; i < VECTOR_SIZE; i++) {
+	input[i]=rand()%MODULO_LATTICE;
+    }//end for
+}//end create_polynome()
+
+/*---------------------------------------------------------------------------*/
+
+static void tcpip_handler(struct simple_udp_connection *c,
          const uip_ipaddr_t *sender_addr,
          uint16_t sender_port,
          const uip_ipaddr_t *receiver_addr,
          uint16_t receiver_port,
          const void *data,
-         uint16_t datalen)
-{
+         uint16_t datalen){
+
   char *appdata;
 
   if(data) {
@@ -83,11 +101,8 @@ tcpip_handler(struct simple_udp_connection *c,
 	    	PRINTF("%d",
 		   UIP_IP_BUF->srcipaddr.u8[sizeof(UIP_IP_BUF->srcipaddr.u8) - 1]);
 	    	PRINTF("\n");
-
 		get_lattice();
-
-		PRINTF("Sending...\n");
-     }
+     }//end if
 
      struct udp_lattice temp_lattice;
      temp_lattice.metadata = public_lattice.metadata;
@@ -103,26 +118,15 @@ tcpip_handler(struct simple_udp_connection *c,
              PRINTF("%d", UIP_IP_BUF->srcipaddr.u8[sizeof(UIP_IP_BUF->srcipaddr.u8) - 1]);
 	     PRINTF("\n");
 	     memcpy(temp_lattice.vectors, &public_lattice.vectors[(request_id*DATA_PER_PACKET)%VECTOR_SIZE], DATA_PER_PACKET*sizeof(*public_lattice.vectors));
-     }
-     //uip_ipaddr_copy(&server_conn->ripaddr, &UIP_IP_BUF->srcipaddr);
-     //uip_udp_packet_send(server_conn, &temp_lattice, sizeof(temp_lattice));
-     //uip_create_unspecified(&server_conn->ripaddr);
+     }//end ifelse
      simple_udp_sendto(&udp_conn, &temp_lattice, sizeof(temp_lattice), sender_addr);
-  }
-}
+  }//end if
+}//end tcpip_handler()
 
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(udp_gateway_process, ev, data)
 {
-  //uip_ipaddr_t ipaddr;
-  //struct uip_ds6_addr *root_if;
-
   PROCESS_BEGIN();
-
-  //PROCESS_PAUSE();
-
-  //SENSORS_ACTIVATE(button_sensor);
-
   PRINTF("UDP gateway started\n");
 
   /* Initialize DAG root */
@@ -134,11 +138,7 @@ PROCESS_THREAD(udp_gateway_process, ev, data)
 
   while(1) {
     PROCESS_YIELD();
-    //if(ev == tcpip_event) {
-      //udp_rx_callback();
-    //}
-  }
-
+  }//end while
   PROCESS_END();
-}
-/*---------------------------------------------------------------------------*/
+}//end main()
+
