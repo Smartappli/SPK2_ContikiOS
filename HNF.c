@@ -1,103 +1,40 @@
 #include <stdio.h> 
 #include <math.h> 
-
-
-double dot_product(double *x, double *y) { 
-
-int i; 
-double ans = 0; 
-
-for(i=0; i<4; ++i) 
-    ans += x[i]*y[i]; 
-
-return ans; 
-} 
-
-
-
-void normalize(double *x) { 
-
-/* Compute norm */ 
-double norm = sqrt(dot_product(x, x)); 
- 
-int i; 
-for(i=0; i<4; ++i) 
-    x[i] /= norm; 
-} 
-
-
+#include "math_functions.c"
 
 /* Find an orthonormal basis for the set of vectors q 
 * using the Gram-Schmidt Orthogonalization process */ 
-void gram_schimdt(double q[][3], int n) { 
+void gram_schimdt_modif(double A[VECTOR_SIZE][VECTOR_SIZE], double Q[VECTOR_SIZE][VECTOR_SIZE]) { 
+	int i, j, k;
+	double A0[VECTOR_SIZE][VECTOR_SIZE];
+	double temp;
 
-int i, j, k;
+    	for (i = 0; i < VECTOR_SIZE; i++){
+            for (j = 0; j < VECTOR_SIZE; j++) {
+                 A0[i][j] = A[i][j];
+            }
+	    printf("\n");
+        }
 
-for(i=1; i<n; ++i) { 
-    for(j=0; j<i; ++j) { 
-        double scaling_factor = dot_product(q[j], q[i])  
-                                / dot_product(q[j], q[j]); 
-         
-        /* Subtract each scaled component of q_j from q_i */ 
-        for(k=0; k<3; ++k) 
-            q[i][k] -= scaling_factor*q[j][k]; 
-    } 
+	for(i=0; i<VECTOR_SIZE; ++i) {  
+	    // Normalisation ok column i
+	    double scaling_factor = 0;
+	    for(j=0; j<VECTOR_SIZE; ++j) 
+		scaling_factor += A0[j][i]*A0[j][i];
+	    scaling_factor = sqrt(scaling_factor);
+	    for(j=0; j<VECTOR_SIZE; ++j)
+		Q[j][i] = A0[j][i]/scaling_factor;
+
+	    //Orthogonalization of all the other columns
+	    for(k=i+1; k<VECTOR_SIZE; k++){ 
+                temp = product_vector_vector(A0, k, Q, i, (int) (sizeof(Q[i])/sizeof(Q[i][0])));
+		//printf("%d\n", (int) (1000*temp));
+		for(j=0; j<VECTOR_SIZE; j++){
+		    A0[j][k] = A0[j][k] - Q[j][i]*temp;
+		}
+	    } 
+	} 
 } 
-
-/* Now normalize all the 'n' orthogonal vectors */ 
-for(i=0; i<n; ++i) 
-    normalize(q[i]); 
-} 
-
-
-
-void HNF(double q[3][3], int n) {
-        double test[3][3];
-	double output[3][3];
-        int i, j;
-	for(i=0; i<n; ++i) { 
-	    for(j=0; j<n; ++j) { 
-		test[i][j] = q[i][j];
-		output[i][j] = 0;
-	    }
-	}
-        gram_schimdt(q, n);
-	/*for(i=0; i<n; ++i) { 
-	    for(j=0; j<n; ++j) { 
-		output[i][j] += dot_product(q[j], test[i]);
-		printf("%d  ", (int) (arr[i][j]*1000)); 
-	    }
-	}*/
-
-	    for(i=0; i<3; ++i) { 
-		printf("q[%d] = [ ", i); 
-		for(j=0; j<3; ++j) 
-		    printf("%d  ", (int) (q[i][j]*1000)); 
-		printf("]\n"); 
-	    }  
-
-	int k;
-
-	for(i=0;i<3;i++)    
-	{    
-	for(j=0;j<3;j++)    
-	{    
-	output[i][j]=0;    
-	for(k=0;k<3;k++)    
-	{    
-	output[i][j]+=q[i][k]*test[k][j];    
-	}    
-	}    
-	}    
-
-	for(i=0; i<n; ++i) { 
-	    for(j=0; j<n; ++j) { 
-		q[i][j] = output[i][j];
-	    }
-	}
-}
-
-
 
 
 
