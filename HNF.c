@@ -27,13 +27,20 @@ void gram_schimdt_modif(double A[VECTOR_SIZE][VECTOR_SIZE], double Q[VECTOR_SIZE
 
 	    //Orthogonalization of all the other columns
 	    for(k=i+1; k<VECTOR_SIZE; k++){ 
-                temp = product_vector_vector(A0, k, Q, i, (int) (sizeof(Q[i])/sizeof(Q[i][0])));
+                temp = product_vector_vector(A0, k, Q, i, VECTOR_SIZE);
 		//printf("%d\n", (int) (1000*temp));
 		for(j=0; j<VECTOR_SIZE; j++){
 		    A0[j][k] = A0[j][k] - Q[j][i]*temp;
 		}
-	    } 
-	} 
+	    }
+	}
+	product_matrix_prime_matrix(Q, A, VECTOR_SIZE, A0);
+    	for (i = 0; i < VECTOR_SIZE; i++){
+            for (j = 0; j < VECTOR_SIZE; j++) {
+                 Q[i][j] = A0[i][j];
+            }
+	    printf("\n");
+        }
 } 
 
 

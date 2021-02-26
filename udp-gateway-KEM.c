@@ -59,6 +59,22 @@ void get_lattice(){
 
 /*---------------------------------------------------------------------------*/
 
+void build_new_lattice(double public_lattice[VECTOR_SIZE][VECTOR_SIZE], double private_lattice_2[VECTOR_SIZE][VECTOR_SIZE]){
+    int i, j;
+    for(i = 0; i < VECTOR_SIZE; i++){
+        for(j = 0; j < VECTOR_SIZE; j++){
+	    private_lattice_2[i][j] = rand()%MODULO_LATTICE;
+        }
+    }
+    for(i = 0; i < VECTOR_SIZE-1; i++){
+        int vector = rand()%VECTOR_SIZE;
+        for(j = 0; j < VECTOR_SIZE; j++)
+	    private_lattice_2[vector][j] = public_lattice[vector][j];
+    }
+}
+
+/*---------------------------------------------------------------------------*/
+
 void create_polynome(long input[]){
     long i;
     for(i = 0; i < VECTOR_SIZE; i++) {
@@ -125,17 +141,32 @@ PROCESS_THREAD(udp_gateway_process, ev, data)
   double public_lattice[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
   gram_schimdt_modif(private_lattice, public_lattice);
   int i, j;
-  /*for (i = 0; i < 3; i++){
+  for (i = 0; i < 3; i++){
       for (j = 0; j < 3; j++) {
           printf("%d ", (int) (1000*public_lattice[i][j]));
       }
       printf("\n");
-  }*/
-  
+  }
+ 
   
   double private_lattice_2[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
   
   build_new_lattice(public_lattice, private_lattice_2);
+
+  printf("esssssss\n");
+  int i, j;
+  for (i = 0; i < 3; i++){
+      for (j = 0; j < 3; j++) 
+          printf("%d %d", (int) (public_lattice[i][j]), i);
+      printf("\n");
+  }
+  printf("222222esssssss\n");
+  for (i = 0; i < 3; i++){
+      for (j = 0; j < 3; j++) {
+          printf("%d ", (int) (private_lattice_2[i][j]));
+      }
+      printf("\n");
+  }
 
 
   /* Initialize DAG root */

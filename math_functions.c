@@ -39,10 +39,38 @@ double round(double input){
 }
 
 
-double product_vector_vector(double a[3][3], int aa, double b[3][3], int bb, int size){
+double product_vector_vector(double a[VECTOR_SIZE][VECTOR_SIZE], int aa, double b[VECTOR_SIZE][VECTOR_SIZE], int bb, int size){
     int i;
     double output = 0;
     for(i = 0; i < size; i++)
 	output += a[i][aa]*b[i][bb];
     return output;
+}
+
+void product_matrix_prime_matrix(double a[VECTOR_SIZE][VECTOR_SIZE], double b[VECTOR_SIZE][VECTOR_SIZE], const int size, double output[VECTOR_SIZE][VECTOR_SIZE]){
+    
+    int i, j, k;
+
+  for (i = 0; i < 3; i++){
+      for (j = 0; j < 3; j++) {
+          printf("%d ", (int) (1000*a[i][j]));
+      }
+      printf("\n");
+  }
+
+  for (i = 0; i < 3; i++){
+      for (j = 0; j < 3; j++) {
+          printf("%d ", (int) (1000*b[i][j]));
+      }
+      printf("\n");
+  }
+
+
+    for(i = 0; i < size; i++){
+        for(j = 0; j < size; j++){
+	    output[i][j] = 0;
+	    for(k = 0; k < size; k++)
+	        output[i][j] += a[k][i]*b[k][j];
+	}
+    }
 }
